@@ -74,12 +74,16 @@ function DrawData(){
 	// console.log(sepalLength);
 	const xScale = d3.scaleLinear()
 				.domain(d3.extent(data, data => data.sepalLength))
-				.range([100, w])
+				.range([100, w - 100])
 				.nice();
 	const yScale = d3.scaleLinear()
 				.domain(d3.extent(data, data => data.sepalWidth))
 				.range([500, 100])
 				.nice();
+	console.log(xScale.ticks());
+
+	const unitX = 400 / (xScale.ticks().length - 1);
+	const unitY = 400 / (yScale.ticks().length - 1);
 	// const xScale = d3.scaleLinear()
 	// 			.domain(d3.extent(sepalLength))
 	// 			.range([xaxis, w])
@@ -93,11 +97,39 @@ function DrawData(){
 	// console.log(xScale(sepalLength[0])); //137.49999999999994
 	return (
 		<svg width={w} height={h}>
+			<line x1={xaxis} y1={yaxis} x2={w - 100} y2={yaxis} stroke='black' />
+			<g>
+				{
+				xScale.ticks().map((data, index) => {
+					const t = `translate(${100 + index * unitX}, ${500})`;
+					return (
+						<g transform={t} key={index} >
+							<line x1={0} y1={0} x2={0} y2={5} stroke="black"/>
+							<text x={0} y={15} textAnchor='middle' dominantBaseline="central" stroke="black">{data}</text>
+						</g>
+					);
+				})
+				}
+			</g>
+			<line x1={xaxis} y1={xaxis} x2={xaxis} y2={yaxis} stroke='black' />
+			<g>
+				{
+				yScale.ticks().map((data, index) => {
+					const t = `translate(${100}, ${500 - unitY * index})`;
+					return (
+						<g transform={t} key={index} >
+							<line x1={0} y1={0} x2={-5} y2={0} stroke="black"/>
+							<text x={-15} y={0} textAnchor='end' dominantBaseline="central" stroke="black">{data}</text>
+						</g>
+					);
+				})
+				}
+			</g>
 			{
 			data.map((data, index) => (
 				<circle key={index} cx={xScale(data.sepalLength)} cy={yScale(data.sepalWidth)} r="5" fill={data.color} stroke={data.color} />
 			))
-			};
+			}
 			{/* {
 				for(const data of data){
 					<circle key={index} cx={xScale(data.sepalLength)} cy={yScale(data.sepalWidth)} r="5" fill={data.color} stroke={data.color} />
@@ -106,8 +138,6 @@ function DrawData(){
 			{/* {sepalLength.map((element, index) => (
 				<circle key={index} cx={xScale(element[0])} cy={yScale(element[0])} r="5" fill="blue" stroke="blue" />
 			))}; */}
-			<line x1={xaxis} y1={yaxis} x2={w} y2={yaxis} stroke='black' />
-			<line x1={xaxis} y1={xaxis} x2={xaxis} y2={yaxis} stroke='black' />
 		</svg>
 	);
 };

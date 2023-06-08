@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Select from "react-select";
 import * as d3 from "d3";
 
-function DrawData(xs, xy) {
+function DrawData({ XValue, YValue }) {
 	const [data, setData] = useState([]);
 
 	const url = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/2004014/iris.json";
@@ -20,8 +20,10 @@ function DrawData(xs, xy) {
 	const h = 600;
 	const xaxis = 100;
 	const yaxis = h - 100;
-	const xProperty = "petalLength";
-	const yProperty = "sepalWidth";
+	const xProperty = XValue.value;
+	const yProperty = YValue.value;
+	const [canShow, setcanShow] = useState(new Set([]));
+	console.log(canShow);
 
 	const xScale = d3.scaleLinear()
 		.domain(d3.extent(data, item => item[xProperty]))
@@ -45,7 +47,7 @@ function DrawData(xs, xy) {
 				{
 					xScale.ticks().map((data, index) => {
 						return (
-							<g transform={`translate(${xScale(data)}, ${500})`} key={index} >
+							<g transform={`translate(${xScale(data)}, 500)`} key={index} >
 								<line x1={0} y1={0} x2={0} y2={5} stroke="black" />
 								<text x={0} y={15} textAnchor='middle' dominantBaseline="central" stroke="black" fontSize="16" >{data}</text>
 							</g>
@@ -58,7 +60,7 @@ function DrawData(xs, xy) {
 				{
 					yScale.ticks().map((data, index) => {
 						return (
-							<g transform={`translate(${100}, ${yScale(data)})`} key={index} >
+							<g transform={`translate(100, ${yScale(data)})`} key={index} >
 								<line x1="0" y1="0" x2="-5" y2="0" stroke="black" />
 								<text x="-15" y="0" textAnchor="end" dominantBaseline="central" stroke="black" fontSize="16" >{data}</text>
 							</g>
@@ -67,14 +69,23 @@ function DrawData(xs, xy) {
 				}
 			</g>
 				{
-					data.map((data, index) => (
+					// data.map((data, index) => (
+					data.filter((item) => !canShow.has(item.species)).map((data, index) => (
 						<circle key={index} cx={xScale(data[xProperty])} cy={yScale(data[yProperty])} r="5" fill={color(data.species)} stroke={data.color} />
 					))
 				}
-				<g transform="translate(450, -300)">
+				<g transform="translate(450, -300)" >
 					{
 						Array.from(setSpecies).map((species, index) => (
-							<g key={index} transform={`translate(${xaxis}, ${yaxis + index * 20})`}>
+							<g key={index} transform={`translate(${xaxis}, ${yaxis + index * 20})`} onClick={() => {
+								const newVisibility = new Set(canShow);
+								if (canShow.has(species)) {
+								  newVisibility.delete(species)
+								} else {
+								  newVisibility.add(species)
+								}
+								setcanShow(new Set(newVisibility));
+							  }} >
 								<rect x="0" y="0" width="10" height="10" fill={color(species)}></rect>
 								<text x="15" y="5" dominantBaseline="middle" fontSize="16" >{species}</text>
 							</g>
@@ -98,14 +109,13 @@ function App() {
 	const options = [
 		{ value: "sepalLength", label: "Sepal Length" },
 		{ value: "sepalWidth", label: "Sepal Width" },
-		{ value: "petallLength", label: "Petal Length" },
+		{ value: "petalLength", label: "Petal Length" },
 		{ value: "petalWidth", label: "Petal Width" },
 	];
 	const [selectedXValue, setSelectedXValue] = useState(options[0]);
-	const [selectedYValue, setSelectedYValue] = useState(options[0]);
-	console.log(selectedXValue);
-	console.log(selectedYValue);
-
+	const [selectedYValue, setSelectedYValue] = useState(options[1]);
+	// console.log(selectedXValue);
+	// console.log(selectedYValue);
 	return (
 	<div style={{ width: "300px", margin: "50px" }}>
 		<p>Horizontal Axis</p>
@@ -118,7 +128,7 @@ function App() {
 				value ? setSelectedYValue(value) : sepalWidth;
 			}}
 		/>
-		<DrawData setSelectedValue/>
+		<DrawData XValue={selectedXValue} YValue={selectedYValue} />
 		<h1>Hello, World!</h1>
 	</div>
 	);

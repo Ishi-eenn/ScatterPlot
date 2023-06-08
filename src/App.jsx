@@ -14,7 +14,7 @@ function DrawData({ XValue, YValue }) {
 				setData(response);
 			})
 	}, []);
-	console.log(data);
+	// console.log(data);
 
 	const w = 800;
 	const h = 600;
@@ -23,7 +23,7 @@ function DrawData({ XValue, YValue }) {
 	const xProperty = XValue.value;
 	const yProperty = YValue.value;
 	const [canShow, setcanShow] = useState(new Set([]));
-	console.log(canShow);
+	// console.log(canShow);
 
 	const xScale = d3.scaleLinear()
 		.domain(d3.extent(data, item => item[xProperty]))
@@ -33,36 +33,39 @@ function DrawData({ XValue, YValue }) {
 		.domain(d3.extent(data, item => item[yProperty]))
 		.range([500, 100])
 		.nice();
-	console.log(xScale.ticks());
+	// console.log(xScale.ticks());
 
 	const color = d3.scaleOrdinal(d3.schemeCategory10);
+	for (const item of data) {
+		color(item.species)
+	}
 	const setSpecies = new Set(data.map((data) => {
 		return data.species;
 	}));
-	console.log(setSpecies);
+	// console.log(setSpecies);
 	return (
 		<svg width={w} height={h}>
-			<line x1={xaxis} y1={yaxis} x2={w - 300} y2={yaxis} stroke='black' />
+			<line x1={xaxis} y1={yaxis} x2={w - 300} y2={yaxis} stroke="black" />
 			<g>
 				{
 					xScale.ticks().map((data, index) => {
 						return (
 							<g transform={`translate(${xScale(data)}, 500)`} key={index} >
-								<line x1={0} y1={0} x2={0} y2={5} stroke="black" />
-								<text x={0} y={15} textAnchor='middle' dominantBaseline="central" stroke="black" fontSize="16" >{data}</text>
+								<line x1="0" y1="0" x2="0" y2="5" stroke="black" />
+								<text x="0" y="15" textAnchor='middle' dominantBaseline="central" stroke="black" fontSize="12" >{data}</text>
 							</g>
 						);
 					})
 				}
 			</g>
-			<line x1={xaxis} y1={xaxis} x2={xaxis} y2={yaxis} stroke='black' />
+			<line x1={xaxis} y1={xaxis} x2={xaxis} y2={yaxis} stroke="black" />
 			<g> {/* y軸ラベル */}
 				{
 					yScale.ticks().map((data, index) => {
 						return (
 							<g transform={`translate(100, ${yScale(data)})`} key={index} >
 								<line x1="0" y1="0" x2="-5" y2="0" stroke="black" />
-								<text x="-15" y="0" textAnchor="end" dominantBaseline="central" stroke="black" fontSize="16" >{data}</text>
+								<text x="-15" y="0" textAnchor="end" dominantBaseline="central" stroke="black" fontSize="12" >{data}</text>
 							</g>
 						);
 					})
@@ -71,13 +74,15 @@ function DrawData({ XValue, YValue }) {
 				{
 					// data.map((data, index) => (
 					data.filter((item) => !canShow.has(item.species)).map((data, index) => (
-						<circle key={index} cx={xScale(data[xProperty])} cy={yScale(data[yProperty])} r="5" fill={color(data.species)} stroke={data.color} />
+						// <circle key={index} cx={xScale(data[xProperty])} cy={yScale(data[yProperty])} r="5" fill={color(data.species)} stroke={data.color} />
+						<circle key={index} cx={xScale(data[xProperty])} cy={yScale(data[yProperty])} r="5" fill={color(data.species)} stroke={data.color} style={{transitionDuration: "2s"}} />
 					))
 				}
 				<g transform="translate(450, -300)" >
 					{
 						Array.from(setSpecies).map((species, index) => (
-							<g key={index} transform={`translate(${xaxis}, ${yaxis + index * 20})`} onClick={() => {
+							<g key={index} transform={`translate(${xaxis}, ${yaxis + index * 20})`}
+								onClick={() => {
 								const newVisibility = new Set(canShow);
 								if (canShow.has(species)) {
 								  newVisibility.delete(species)
@@ -129,7 +134,7 @@ function App() {
 			}}
 		/>
 		<DrawData XValue={selectedXValue} YValue={selectedYValue} />
-		<h1>Hello, World!</h1>
+		{/* <h1>Hello, World!</h1> */}
 	</div>
 	);
 }

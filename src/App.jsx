@@ -22,8 +22,8 @@ function DrawData({ XValue, YValue }) {
 	const yaxis = h - 100;
 	const xProperty = XValue.value;
 	const yProperty = YValue.value;
-	const [canShow, setcanShow] = useState(new Set([]));
-	// console.log(canShow);
+	const [canotShow, setcanotShow] = useState(new Set([]));
+	// console.log(canotShow);
 
 	const xScale = d3.scaleLinear()
 		.domain(d3.extent(data, item => item[xProperty]))
@@ -73,7 +73,7 @@ function DrawData({ XValue, YValue }) {
 			</g>
 				{
 					// data.map((data, index) => (
-					data.filter((item) => !canShow.has(item.species)).map((data, index) => (
+					data.filter((item) => !canotShow.has(item.species)).map((data, index) => (
 						// <circle key={index} cx={xScale(data[xProperty])} cy={yScale(data[yProperty])} r="5" fill={color(data.species)} stroke={data.color} />
 						<circle key={index} cx={xScale(data[xProperty])} cy={yScale(data[yProperty])} r="5" fill={color(data.species)} stroke={data.color} style={{transitionDuration: "2s"}} />
 					))
@@ -83,15 +83,15 @@ function DrawData({ XValue, YValue }) {
 						Array.from(setSpecies).map((species, index) => (
 							<g key={index} transform={`translate(${xaxis}, ${yaxis + index * 20})`}
 								onClick={() => {
-								const newVisibility = new Set(canShow);
-								if (canShow.has(species)) {
-								  newVisibility.delete(species)
+								const deleteSpecies = new Set(canotShow);
+								if(canotShow.has(species)) {
+									deleteSpecies.delete(species)
 								} else {
-								  newVisibility.add(species)
+									deleteSpecies.add(species)
 								}
-								setcanShow(new Set(newVisibility));
+								setcanotShow(new Set(deleteSpecies));
 							  }} >
-								<rect x="0" y="0" width="10" height="10" fill={color(species)}></rect>
+								<rect x="0" y="0" width="10" height="10" fill={color(species)} ></rect>
 								<text x="15" y="5" dominantBaseline="middle" fontSize="16" >{species}</text>
 							</g>
 						))
@@ -101,7 +101,7 @@ function DrawData({ XValue, YValue }) {
 				<text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fontSize="16" >{xProperty}</text>
 			</g>
 			{/* <g transform={`translate(x="300", y=${(h - 550) / 2 + yaxis})`}> */}
-			<text x={300} y={(h - 550) / 2 + yaxis} textAnchor="middle" dominantBaseline="middle" fontSize="16" transform={`rotate(-90, 60, ${(h - yaxis) / 2 + yaxis})`}>
+			<text x={300} y={(h - 550) / 2 + yaxis} textAnchor="middle" dominantBaseline="middle" fontSize="16" transform={`rotate(-90, 60, ${(h - yaxis) / 2 + yaxis})`} >
 			{/* </g> */}
 			{yProperty}
 			</text>
@@ -122,7 +122,7 @@ function App() {
 	// console.log(selectedXValue);
 	// console.log(selectedYValue);
 	return (
-	<div style={{ width: "300px", margin: "50px" }}>
+	<div style={{ width: "300px", margin: "50px" }} >
 		<p>Horizontal Axis</p>
 		<Select options={options} defaultValue={selectedXValue} onChange={(value) => {
 				value ? setSelectedXValue(value) : sepalWidth;

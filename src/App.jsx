@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Select from "react-select";
 import * as d3 from "d3";
 
-function DrawData(xs) {
+function DrawData(xs, xy) {
 	const [data, setData] = useState([]);
 
 	const url = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/2004014/iris.json";
@@ -20,7 +20,7 @@ function DrawData(xs) {
 	const h = 600;
 	const xaxis = 100;
 	const yaxis = h - 100;
-	const xProperty = "sepalLength";
+	const xProperty = "petalLength";
 	const yProperty = "sepalWidth";
 
 	const xScale = d3.scaleLinear()
@@ -81,9 +81,13 @@ function DrawData(xs) {
 						))
 					}
 				</g>
-			<text x={w / 2 - 100} y={h - 50} textAnchor="middle" dominantBaseline="middle" fontSize="16" >sepalLength</text>
+			<g transform={`translate(${w / 2 - 100}, ${h - 50})`}>
+				<text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fontSize="16" >{xProperty}</text>
+			</g>
+			{/* <g transform={`translate(x="300", y=${(h - 550) / 2 + yaxis})`}> */}
 			<text x={300} y={(h - 550) / 2 + yaxis} textAnchor="middle" dominantBaseline="middle" fontSize="16" transform={`rotate(-90, 60, ${(h - yaxis) / 2 + yaxis})`}>
-			sepalWidth
+			{/* </g> */}
+			{yProperty}
 			</text>
 		</svg>
 	);
